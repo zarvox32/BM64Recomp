@@ -166,6 +166,7 @@ set (SOURCES
     ${CMAKE_SOURCE_DIR}/src/game/rom_decompression.cpp
     ${CMAKE_SOURCE_DIR}/src/game/minicoro.cpp
     ${CMAKE_SOURCE_DIR}/src/game/process_coroutines.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/speech.cpp
 
     ${CMAKE_SOURCE_DIR}/src/ui/ui_renderer.cpp
     ${CMAKE_SOURCE_DIR}/src/ui/ui_state.cpp
@@ -364,6 +365,9 @@ target_link_libraries(BM64Recompiled PRIVATE
     nfd
     lunasvg
 )
+
+# Accessibility speech output (screen readers / text-to-speech)
+include(${CMAKE_SOURCE_DIR}/cmake/Prism.cmake)
 
 # TODO fix the rt64 CMake script so that this doesn't need to be duplicated here
 # For DXC

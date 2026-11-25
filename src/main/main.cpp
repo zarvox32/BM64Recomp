@@ -36,6 +36,7 @@
 #include "zelda_cheats.h"
 #include "zelda_game.h"
 #include "recomp_data.h"
+#include "bm64_speech.h"
 #include "ovl_patches.hpp"
 #include "librecomp/game.hpp"
 #include "librecomp/mods.hpp"
@@ -46,6 +47,7 @@
 #include "../../patches/sound.h"
 #include "../../patches/misc_funcs.h"
 #include "../../patches/cheats.h"
+#include "../../patches/speech.h"
 
 // #include "mods/mm_recomp_dpad_builtin.h"
 
@@ -623,6 +625,9 @@ int main(int argc, char** argv) {
     REGISTER_FUNC(recomp_get_always_have_red_bombs);
     REGISTER_FUNC(recomp_get_infinite_credits);
     REGISTER_FUNC(recomp_get_infinite_lives);
+    REGISTER_FUNC(recomp_speak);
+    REGISTER_FUNC(recomp_speech_stop);
+    REGISTER_FUNC(recomp_speech_is_active);
     recompui::register_ui_exports();
     recomputil::register_data_api_exports();
 
@@ -630,6 +635,10 @@ int main(int argc, char** argv) {
     zelda64::register_patches();
     // recomputil::init_extended_actor_data();
     zelda64::load_config();
+
+    // Start accessibility speech before the launcher appears so it can be announced.
+    bm64::speech::init();
+    bm64::speech::speak("Bomberman 64 Recompiled", true);
 
     recomp::rsp::callbacks_t rsp_callbacks{
         .get_rsp_microcode = get_rsp_microcode,
@@ -699,6 +708,8 @@ int main(int argc, char** argv) {
     };
 
     recomp::start(cfg);
+
+    bm64::speech::shutdown();
 
     NFD_Quit();
 

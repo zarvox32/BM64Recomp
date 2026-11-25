@@ -73,3 +73,12 @@ gamecontrollerdb.txt
 
 # RSP Microcode recompiled output
 aspMain.cpp
+
+# Game files
+/game/
+
+# Accessibility reference material (third-party code, do not commit)
+accessibility/references/
+
+# Local helper commands (machine-specific paths)
+accessibility/commands/
