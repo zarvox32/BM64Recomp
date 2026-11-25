@@ -82,3 +82,6 @@ accessibility/references/
 
 # Local helper commands (machine-specific paths)
 accessibility/commands/
+
+# Game output logs from local test runs
+accessibility/logs/
