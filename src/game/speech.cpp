@@ -35,6 +35,9 @@ namespace {
     std::thread worker;
 
     std::atomic<Mode> mode{ Mode::Auto };
+    // Set from BM64_SPEECH_LOG: print everything spoken to stderr, so speech
+    // can be checked without hearing it and quoted in bug reports.
+    std::atomic<bool> log_speech{ false };
     std::atomic<bool> backend_ready{ false };
     std::atomic<bool> backend_is_screen_reader{ false };
 
@@ -180,6 +183,8 @@ void bm64::speech::init() {
         return;
     }
     mode = mode_from_env();
+    const char* log_env = std::getenv("BM64_SPEECH_LOG");
+    log_speech = log_env != nullptr && log_env[0] != '\0' && log_env[0] != '0';
     quit = false;
     stop_pending = false;
     queue.clear();
@@ -209,6 +214,9 @@ void bm64::speech::shutdown() {
 void bm64::speech::speak(std::string text, bool interrupt) {
     if (mode.load() == Mode::Off || is_blank(text)) {
         return;
+    }
+    if (log_speech.load()) {
+        fprintf(stderr, "[Speech] %s%s\n", interrupt ? "" : "(queued) ", text.c_str());
     }
     {
         std::lock_guard lock{ queue_mutex };

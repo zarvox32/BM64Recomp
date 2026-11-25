@@ -22,6 +22,8 @@
 #include "zelda_config.h"
 #include "zelda_support.h"
 #include "ui_rml_hacks.hpp"
+#include "ui_accessibility.h"
+#include "bm64_speech.h"
 #include "ui_elements.h"
 #include "ui_mod_menu.h"
 #include "ui_mod_installer.h"
@@ -284,6 +286,23 @@ public:
             }
             else if (window_el->HasAttribute("mouse-active")) {
                 window_el->RemoveAttribute("mouse-active");
+            }
+        }
+    }
+
+    // Focuses the top menu's default control if no control has focus. Menus
+    // normally wait for the first keyboard or controller press before focusing
+    // anything, which leaves a screen reader user with nothing announced.
+    void focus_default_if_unfocused() {
+        Rml::ElementDocument* current_document = top_mouse_document();
+        if (current_document == nullptr) {
+            return;
+        }
+        Rml::Element* focused = current_document->GetFocusLeafNode();
+        if (focused == nullptr || RecompRml::CanFocusElement(focused) != RecompRml::CanFocus::Yes) {
+            Rml::Element* element = find_autofocus_element(current_document);
+            if (element != nullptr) {
+                element->Focus();
             }
         }
     }
@@ -753,6 +772,13 @@ void draw_hook(plume::RenderCommandList* command_list, plume::RenderFramebuffer*
     ui_state->update_focus(mouse_moved, non_mouse_interacted);
 
     if (recompui::is_any_context_shown()) {
+        if (bm64::speech::is_active()) {
+            ui_state->focus_default_if_unfocused();
+        }
+        recompui::accessibility::announce_focus(ui_state->context, mouse_moved || non_mouse_interacted);
+    }
+
+    if (recompui::is_any_context_shown()) {
         ui_state->update_contexts();
 
         int width = swap_chain_framebuffer->getWidth();
@@ -804,6 +830,9 @@ void recompui::show_context(ContextId context, std::string_view param) {
 
         // TODO call the context's on_show callback with the param.
         ui_state->show_context(context);
+        // Announce the focused control of the newly shown menu even if it is the
+        // same element that had focus when this menu was last open.
+        recompui::accessibility::reset_focus();
     }
     if (prev_context != ContextId::null()) {
         prev_context.open();

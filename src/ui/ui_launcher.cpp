@@ -5,6 +5,7 @@
 #include "ultramodern/ultramodern.hpp"
 #include "RmlUi/Core.h"
 #include "nfd.h"
+#include "bm64_speech.h"
 #include <filesystem>
 
 static std::string version_string;
@@ -23,6 +24,9 @@ void select_rom() {
                 case recomp::RomValidationError::Good:
                     mm_rom_valid = true;
                     model_handle.DirtyVariable("mm_rom_valid");
+                    // Queued rather than interrupting, so the newly focused
+                    // Start game button is announced after it.
+                    bm64::speech::speak("ROM loaded", false);
                     break;
                 case recomp::RomValidationError::FailedToOpen:
                     recompui::message_box("Failed to open ROM file.");
