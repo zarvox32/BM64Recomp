@@ -37,6 +37,8 @@
 #include "zelda_game.h"
 #include "recomp_data.h"
 #include "bm64_screen_reader.h"
+#include "bm64_audio_cues.h"
+#include "bm64_menu_cursor_search.h"
 #include "ovl_patches.hpp"
 #include "librecomp/game.hpp"
 #include "librecomp/mods.hpp"
@@ -588,6 +590,7 @@ int main(int argc, char** argv) {
     // Initialize SDL audio and set the output frequency.
     SDL_InitSubSystem(SDL_INIT_AUDIO);
     reset_audio(48000);
+    bm64::audio_cues::init();
 
     // Source controller mappings file
     std::u8string controller_db_path = (zelda64::get_program_path() / "recompcontrollerdb.txt").u8string();
@@ -638,6 +641,8 @@ int main(int argc, char** argv) {
 
     // Start accessibility speech before the launcher appears so it can be announced.
     bm64::screen_reader::init();
+    // Developer tool for mapping the game's menus; only runs with BM64_MENU_SEARCH set.
+    bm64::menu_cursor_search::start();
     bm64::screen_reader::speak("Bomberman 64 Recompiled", true);
 
     recomp::rsp::callbacks_t rsp_callbacks{
@@ -709,6 +714,8 @@ int main(int argc, char** argv) {
 
     recomp::start(cfg);
 
+    bm64::menu_cursor_search::stop();
+    bm64::audio_cues::shutdown();
     bm64::screen_reader::shutdown();
 
     NFD_Quit();

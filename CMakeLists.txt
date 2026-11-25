@@ -167,6 +167,8 @@ set (SOURCES
     ${CMAKE_SOURCE_DIR}/src/game/minicoro.cpp
     ${CMAKE_SOURCE_DIR}/src/game/process_coroutines.cpp
     ${CMAKE_SOURCE_DIR}/src/game/screen_reader.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/audio_cues.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/menu_cursor_search.cpp
 
     ${CMAKE_SOURCE_DIR}/src/ui/ui_renderer.cpp
     ${CMAKE_SOURCE_DIR}/src/ui/ui_state.cpp

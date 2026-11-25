@@ -2,6 +2,7 @@
 
 #include "recomp.h"
 #include "librecomp/helpers.hpp"
+#include "bm64_menu_cursor_search.h"
 #include <cstring>
 #include <cstdio>
 #include <cstdarg>
@@ -190,8 +191,9 @@ static void process_coro_entry(mco_coro* co) {
 // ============================================================================
 
 extern "C" void recomp_process_init(uint8_t* rdram, recomp_context* ctx) {
-    (void)rdram;
     (void)ctx;
+    // The RAM pointer never changes; the menu cursor search needs it to read memory.
+    bm64::menu_cursor_search::set_rdram(rdram);
     
     process_log("Initializing process system");
     
