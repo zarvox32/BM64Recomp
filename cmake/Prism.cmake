@@ -65,11 +65,43 @@ message(STATUS "Prism speech: using ${PRISM_PACKAGE_DIR}")
 target_link_libraries(BM64Recompiled PRIVATE prism::prism)
 target_compile_definitions(BM64Recompiled PRIVATE BM64_HAS_PRISM)
 
-# Ship the Prism shared library next to the executable.
-add_custom_command(TARGET BM64Recompiled POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:prism::_prism_lib>
-        $<TARGET_FILE_DIR:BM64Recompiled>)
+# Prism asks distributors to ship its NOTICE and LICENSES files: it is MPL-2.0
+# and bundles code under other licenses, including LGPL code for NVDA.
+if (APPLE)
+    # Put the dylib in Contents/Frameworks, where the bundle's rpath
+    # (@executable_path/../Frameworks) points, and the license files in
+    # Contents/Resources/licenses/prism. CMake copies bundle content while
+    # building the target, so it is in place before apple_bundle.cmake's
+    # post-build fixup and code signing. Copying files into the bundle after
+    # signing would invalidate the signature.
+    get_target_property(_prism_dylib prism::_prism_lib IMPORTED_LOCATION_RELEASE)
+    target_sources(BM64Recompiled PRIVATE "${_prism_dylib}")
+    set_source_files_properties("${_prism_dylib}" PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
+
+    file(GLOB_RECURSE _prism_license_files RELATIVE "${PRISM_PACKAGE_DIR}"
+        "${PRISM_PACKAGE_DIR}/NOTICE" "${PRISM_PACKAGE_DIR}/LICENSES/*")
+    foreach (_prism_license IN LISTS _prism_license_files)
+        get_filename_component(_prism_license_dir "${_prism_license}" DIRECTORY)
+        target_sources(BM64Recompiled PRIVATE "${PRISM_PACKAGE_DIR}/${_prism_license}")
+        set_source_files_properties("${PRISM_PACKAGE_DIR}/${_prism_license}" PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources/licenses/prism/${_prism_license_dir}")
+    endforeach()
+else()
+    # Ship the shared library next to the executable, and the license files
+    # in licenses/prism beside it. Release packaging must include both.
+    add_custom_command(TARGET BM64Recompiled POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:prism::_prism_lib>
+            $<TARGET_FILE_DIR:BM64Recompiled>
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            $<TARGET_FILE_DIR:BM64Recompiled>/licenses/prism
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PRISM_PACKAGE_DIR}/NOTICE"
+            $<TARGET_FILE_DIR:BM64Recompiled>/licenses/prism
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${PRISM_PACKAGE_DIR}/LICENSES"
+            $<TARGET_FILE_DIR:BM64Recompiled>/licenses/prism/LICENSES)
+endif()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     # Find libprism.so beside the executable at runtime.

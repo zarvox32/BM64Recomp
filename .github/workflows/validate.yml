@@ -96,8 +96,10 @@ jobs:
       - name: Prepare Archive
         run: |
           mv cmake-build/BM64Recompiled BM64Recompiled
+          mv cmake-build/libprism.so libprism.so
+          mv cmake-build/licenses licenses
           rm -rf assets/scss
-          tar -czf BM64Recompiled.tar.gz BM64Recompiled assets/ recompcontrollerdb.txt
+          tar -czf BM64Recompiled.tar.gz BM64Recompiled libprism.so licenses/ assets/ recompcontrollerdb.txt
       - name: Archive BM64Recomp
         uses: actions/upload-artifact@v4
         with:
@@ -244,8 +246,10 @@ jobs:
       - name: Prepare Archive
         run: |
           mv cmake-build/BM64Recompiled BM64Recompiled
+          mv cmake-build/libprism.so libprism.so
+          mv cmake-build/licenses licenses
           rm -rf assets/scss
-          tar -czf BM64Recompiled.tar.gz BM64Recompiled assets/ recompcontrollerdb.txt
+          tar -czf BM64Recompiled.tar.gz BM64Recompiled libprism.so licenses/ assets/ recompcontrollerdb.txt
       - name: Archive BM64Recomp
         uses: actions/upload-artifact@v4
         with:
@@ -338,6 +342,8 @@ jobs:
           Move-Item -Path "cmake-build/dxcompiler.dll" -Destination "dxcompiler.dll"
           Move-Item -Path "cmake-build/dxil.dll" -Destination "dxil.dll"
           Move-Item -Path "cmake-build/SDL2.dll" -Destination "SDL2.dll"
+          Move-Item -Path "cmake-build/prism.dll" -Destination "prism.dll"
+          Move-Item -Path "cmake-build/licenses" -Destination "licenses"
           Move-Item -Path "cmake-build/BM64Recompiled.pdb" -Destination "BM64Recompiled.pdb"
           Remove-Item -Path "assets/scss" -Recurse -Force
       - name: Archive BM64Recomp
@@ -349,6 +355,8 @@ jobs:
             dxcompiler.dll
             dxil.dll
             SDL2.dll
+            prism.dll
+            licenses/
             assets/
             recompcontrollerdb.txt
       - name: Archive Debug Files

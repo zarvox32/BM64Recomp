@@ -17,8 +17,10 @@ curl -sSfLO "https://github.com/linuxdeploy/linuxdeploy-plugin-gtk/raw/master/li
 
 chmod a+x linuxdeploy*
  
-mkdir -p AppDir/usr/bin
+mkdir -p AppDir/usr/bin AppDir/usr/lib AppDir/usr/share/licenses
 cp BM64Recompiled AppDir/usr/bin/
+cp libprism.so AppDir/usr/lib/
+cp -r licenses/prism AppDir/usr/share/licenses/prism
 cp -r assets/ AppDir/usr/bin/
 cp recompcontrollerdb.txt AppDir/usr/bin/
 cp icons/512.png AppDir/BM64Recompiled.png
@@ -26,7 +28,10 @@ cp .github/linux/BM64Recompiled.desktop AppDir/
 
 "./linuxdeploy-$LINUX_DEPLOY_ARCH.AppImage" --appimage-extract
 mv squashfs-root/ deploy
-./deploy/AppRun --appdir=AppDir/ -d AppDir/BM64Recompiled.desktop -i AppDir/BM64Recompiled.png -e AppDir/usr/bin/BM64Recompiled --plugin gtk
+# Put AppDir/usr/lib on the library path so linuxdeploy resolves the executable's
+# dependency on libprism.so to the copy inside the AppDir.
+LD_LIBRARY_PATH="$PWD/AppDir/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+  ./deploy/AppRun --appdir=AppDir/ -d AppDir/BM64Recompiled.desktop -i AppDir/BM64Recompiled.png -e AppDir/usr/bin/BM64Recompiled --plugin gtk
 sed -i 's/exec/#exec/g' AppDir/AppRun
 echo 'if [ -f "portable.txt" ]; then' >> AppDir/AppRun
 echo '    APP_FOLDER_PATH=$PWD' >> AppDir/AppRun

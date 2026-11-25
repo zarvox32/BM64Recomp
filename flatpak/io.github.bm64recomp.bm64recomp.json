@@ -14,7 +14,10 @@
     "--filesystem=/media",
     "--filesystem=/run/media",
     "--filesystem=/mnt",
-    "--filesystem=xdg-run/gamescope-0:ro"
+    "--filesystem=xdg-run/gamescope-0:ro",
+    "--filesystem=xdg-run/speech-dispatcher:ro",
+    "--talk-name=org.gnome.Orca1.Service",
+    "--talk-name=org.gnome.Orca.Service"
   ],
   "modules": [
     {
@@ -33,6 +36,9 @@
         "rm -rf assets/scss",
         "mkdir -p /app/bin",
         "cp cmake-build/BM64Recompiled /app/bin/BM64Recompiled",
+        "install -Dm755 cmake-build/libprism.so /app/lib/libprism.so",
+        "mkdir -p /app/share/licenses/${FLATPAK_ID}",
+        "cp -R cmake-build/licenses/prism /app/share/licenses/${FLATPAK_ID}/prism",
         "cp recompcontrollerdb.txt /app/bin/recompcontrollerdb.txt",
         "cp -R assets /app/bin/assets",
         "install -Dm644 icons/512.png /app/share/icons/hicolor/512x512/apps/${FLATPAK_ID}.png",
