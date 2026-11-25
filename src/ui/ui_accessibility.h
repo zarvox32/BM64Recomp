@@ -21,6 +21,10 @@ namespace recompui::accessibility {
     // it is the same element (e.g. when a menu is reopened).
     void reset_focus();
 
+    // Speaks a prompt or notification as it opens ("Header. Content."). The
+    // focused button is announced after it. Safe to call from any thread.
+    void announce_message(const std::string& header, const std::string& content);
+
     // The text a screen reader should say for an element: its aria-label
     // attribute if set, otherwise its visible text with decorative bullets
     // removed and whitespace collapsed.

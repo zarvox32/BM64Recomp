@@ -1,6 +1,7 @@
 #include <mutex>
 
 #include "recomp_ui.h"
+#include "ui_accessibility.h"
 
 #include "elements/ui_element.h"
 #include "elements/ui_label.h"
@@ -252,6 +253,7 @@ void recompui::open_choice_prompt(
 
     prompt_state.prompt_header->set_text(header_text);
     prompt_state.prompt_label->set_text(content_text);
+    recompui::accessibility::announce_message(header_text, content_text);
     prompt_state.prompt_controls->set_display(Display::Flex);
     prompt_state.confirm_button->set_display(Display::Block);
     prompt_state.cancel_button->set_display(Display::Block);
@@ -291,6 +293,7 @@ void recompui::open_info_prompt(
 
     prompt_state.prompt_header->set_text(header_text);
     prompt_state.prompt_label->set_text(content_text);
+    recompui::accessibility::announce_message(header_text, content_text);
     prompt_state.prompt_controls->set_display(Display::Flex);
     prompt_state.confirm_button->set_display(Display::None);
     prompt_state.cancel_button->set_display(Display::Block);
@@ -325,6 +328,7 @@ void recompui::open_notification(
 
     prompt_state.prompt_header->set_text(header_text);
     prompt_state.prompt_label->set_text(content_text);
+    recompui::accessibility::announce_message(header_text, content_text);
     prompt_state.prompt_controls->set_display(Display::None);
     prompt_state.confirm_button->set_display(Display::None);
     prompt_state.cancel_button->set_display(Display::None);

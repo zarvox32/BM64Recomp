@@ -92,6 +92,7 @@
 							class="icon-button"
 							onclick="open_quit_game_prompt"
 							id="config__quit-game-button"
+							aria-label="Quit game"
 						>
 							<svg src="icons/Quit.svg" />
 						</button>
@@ -99,6 +100,7 @@
 							class="icon-button"
 							onclick="close_config_menu"
 							id="config__close-menu-button"
+							aria-label="Close menu"
 						>
 							<svg src="icons/X.svg" />
 						</button>
