@@ -1,4 +1,6 @@
 #include <array>
+#include <atomic>
+#include <cmath>
 
 #include "librecomp/helpers.hpp"
 #include "recomp_input.h"
@@ -75,16 +77,26 @@ void recomp::set_input_binding(recomp::GameInput input, size_t binding_index, re
     }
 }
 
+// Input still held when control returns to the game is ignored until it is
+// released: Enter is also N64 Start, so choosing "Start game" in the launcher (or
+// closing a menu) with Enter would otherwise press Start in the game. Start held
+// at power-on opens the game's "Is it OK to Erase Game Pak Memory?" prompt.
+// Starts true to cover the game's first input reads.
+static std::atomic<bool> wait_for_release{ true };
+
 bool recomp::get_n64_input(int controller_num, uint16_t* buttons_out, float* x_out, float* y_out) {
     uint16_t cur_buttons = 0;
     float cur_x = 0.0f;
     float cur_y = 0.0f;
-    
+
     if (controller_num != 0) {
         return false;
     }
 
-    if (!recomp::game_input_disabled()) {
+    if (recomp::game_input_disabled()) {
+        wait_for_release = true;
+    }
+    else {
         for (size_t i = 0; i < n64_button_values.size(); i++) {
             size_t input_index = (size_t)GameInput::N64_BUTTON_START + i;
             cur_buttons |= recomp::get_input_digital(keyboard_input_mappings[input_index]) ? n64_button_values[i] : 0;
@@ -106,6 +118,19 @@ bool recomp::get_n64_input(int controller_num, uint16_t* buttons_out, float* x_o
 
         cur_y = recomp::get_input_analog(keyboard_input_mappings[(size_t)GameInput::Y_AXIS_POS])
                 - recomp::get_input_analog(keyboard_input_mappings[(size_t)GameInput::Y_AXIS_NEG]) + joystick_y;
+
+        if (wait_for_release) {
+            constexpr float stick_released = 0.05f;
+            bool anything_held = cur_buttons != 0 || std::abs(cur_x) > stick_released || std::abs(cur_y) > stick_released;
+            if (anything_held) {
+                cur_buttons = 0;
+                cur_x = 0.0f;
+                cur_y = 0.0f;
+            }
+            else {
+                wait_for_release = false;
+            }
+        }
     }
 
     *buttons_out = cur_buttons;
