@@ -36,7 +36,7 @@
 #include "zelda_cheats.h"
 #include "zelda_game.h"
 #include "recomp_data.h"
-#include "bm64_speech.h"
+#include "bm64_screen_reader.h"
 #include "ovl_patches.hpp"
 #include "librecomp/game.hpp"
 #include "librecomp/mods.hpp"
@@ -47,7 +47,7 @@
 #include "../../patches/sound.h"
 #include "../../patches/misc_funcs.h"
 #include "../../patches/cheats.h"
-#include "../../patches/speech.h"
+#include "../../patches/screen_reader.h"
 
 // #include "mods/mm_recomp_dpad_builtin.h"
 
@@ -637,8 +637,8 @@ int main(int argc, char** argv) {
     zelda64::load_config();
 
     // Start accessibility speech before the launcher appears so it can be announced.
-    bm64::speech::init();
-    bm64::speech::speak("Bomberman 64 Recompiled", true);
+    bm64::screen_reader::init();
+    bm64::screen_reader::speak("Bomberman 64 Recompiled", true);
 
     recomp::rsp::callbacks_t rsp_callbacks{
         .get_rsp_microcode = get_rsp_microcode,
@@ -709,7 +709,7 @@ int main(int argc, char** argv) {
 
     recomp::start(cfg);
 
-    bm64::speech::shutdown();
+    bm64::screen_reader::shutdown();
 
     NFD_Quit();
 

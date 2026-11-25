@@ -166,7 +166,7 @@ set (SOURCES
     ${CMAKE_SOURCE_DIR}/src/game/rom_decompression.cpp
     ${CMAKE_SOURCE_DIR}/src/game/minicoro.cpp
     ${CMAKE_SOURCE_DIR}/src/game/process_coroutines.cpp
-    ${CMAKE_SOURCE_DIR}/src/game/speech.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/screen_reader.cpp
 
     ${CMAKE_SOURCE_DIR}/src/ui/ui_renderer.cpp
     ${CMAKE_SOURCE_DIR}/src/ui/ui_state.cpp

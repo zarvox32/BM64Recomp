@@ -1,9 +1,9 @@
-#ifndef __PATCH_SPEECH_H__
-#define __PATCH_SPEECH_H__
+#ifndef __PATCH_SCREEN_READER_H__
+#define __PATCH_SCREEN_READER_H__
 
 #include "patch_helpers.h"
 
-// Accessibility speech output, implemented natively in src/game/speech.cpp.
+// Accessibility speech output, implemented natively in src/game/screen_reader.cpp.
 // Also exported to mods under the same names.
 
 // Speaks a NUL-terminated ASCII/UTF-8 string. A nonzero interrupt cuts off

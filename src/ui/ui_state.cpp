@@ -23,7 +23,7 @@
 #include "zelda_support.h"
 #include "ui_rml_hacks.hpp"
 #include "ui_accessibility.h"
-#include "bm64_speech.h"
+#include "bm64_screen_reader.h"
 #include "ui_elements.h"
 #include "ui_mod_menu.h"
 #include "ui_mod_installer.h"
@@ -772,7 +772,7 @@ void draw_hook(plume::RenderCommandList* command_list, plume::RenderFramebuffer*
     ui_state->update_focus(mouse_moved, non_mouse_interacted);
 
     if (recompui::is_any_context_shown()) {
-        if (bm64::speech::is_active()) {
+        if (bm64::screen_reader::is_active()) {
             ui_state->focus_default_if_unfocused();
         }
         recompui::accessibility::announce_focus(ui_state->context, mouse_moved || non_mouse_interacted);

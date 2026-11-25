@@ -1,5 +1,5 @@
-#ifndef __BM64_SPEECH_H__
-#define __BM64_SPEECH_H__
+#ifndef __BM64_SCREEN_READER_H__
+#define __BM64_SCREEN_READER_H__
 
 #include <string>
 
@@ -8,7 +8,7 @@
 // All functions are safe to call from any thread. Requests are queued and
 // handed to Prism on a dedicated worker thread, so callers never block on
 // the speech backend. If speech is unavailable or disabled, calls are no-ops.
-namespace bm64::speech {
+namespace bm64::screen_reader {
     enum class Mode {
         Off,  // Never speak.
         Auto, // Speak only when a screen reader (NVDA, JAWS, VoiceOver, Orca...) is running.

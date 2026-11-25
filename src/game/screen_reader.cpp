@@ -9,16 +9,16 @@
 #include <thread>
 #include <utility>
 
-#include "bm64_speech.h"
+#include "bm64_screen_reader.h"
 #include "librecomp/helpers.hpp"
-#include "../../patches/speech.h"
+#include "../../patches/screen_reader.h"
 
 #ifdef BM64_HAS_PRISM
 #include <prism.h>
 #endif
 
 namespace {
-    using bm64::speech::Mode;
+    using bm64::screen_reader::Mode;
 
     struct Request {
         std::string text;
@@ -176,7 +176,7 @@ namespace {
 #endif
 }
 
-void bm64::speech::init() {
+void bm64::screen_reader::init() {
 #ifdef BM64_HAS_PRISM
     std::lock_guard lock{ queue_mutex };
     if (started) {
@@ -193,7 +193,7 @@ void bm64::speech::init() {
 #endif
 }
 
-void bm64::speech::shutdown() {
+void bm64::screen_reader::shutdown() {
 #ifdef BM64_HAS_PRISM
     {
         std::lock_guard lock{ queue_mutex };
@@ -211,7 +211,7 @@ void bm64::speech::shutdown() {
 #endif
 }
 
-void bm64::speech::speak(std::string text, bool interrupt) {
+void bm64::screen_reader::speak(std::string text, bool interrupt) {
     if (mode.load() == Mode::Off || is_blank(text)) {
         return;
     }
@@ -232,7 +232,7 @@ void bm64::speech::speak(std::string text, bool interrupt) {
     queue_cv.notify_one();
 }
 
-void bm64::speech::stop() {
+void bm64::screen_reader::stop() {
     {
         std::lock_guard lock{ queue_mutex };
         if (!started) {
@@ -244,41 +244,41 @@ void bm64::speech::stop() {
     queue_cv.notify_one();
 }
 
-void bm64::speech::set_mode(Mode new_mode) {
+void bm64::screen_reader::set_mode(Mode new_mode) {
     mode = new_mode;
     if (new_mode == Mode::Off) {
         stop();
     }
 }
 
-bm64::speech::Mode bm64::speech::get_mode() {
+bm64::screen_reader::Mode bm64::screen_reader::get_mode() {
     return mode.load();
 }
 
-bool bm64::speech::is_active() {
+bool bm64::screen_reader::is_active() {
     return backend_ready.load() && output_allowed();
 }
 
-std::string bm64::speech::backend_name() {
+std::string bm64::screen_reader::backend_name() {
     std::lock_guard lock{ name_mutex };
     return selected_backend_name;
 }
 
-// Bridges callable from game patches and mods. See patches/speech.h.
+// Bridges callable from game patches and mods. See patches/screen_reader.h.
 
 extern "C" void recomp_speak(uint8_t* rdram, recomp_context* ctx) {
     std::string text = _arg_string<0>(rdram, ctx);
     s32 interrupt = _arg<1, s32>(rdram, ctx);
-    bm64::speech::speak(std::move(text), interrupt != 0);
+    bm64::screen_reader::speak(std::move(text), interrupt != 0);
 }
 
 extern "C" void recomp_speech_stop(uint8_t* rdram, recomp_context* ctx) {
     (void)rdram;
     (void)ctx;
-    bm64::speech::stop();
+    bm64::screen_reader::stop();
 }
 
 extern "C" void recomp_speech_is_active(uint8_t* rdram, recomp_context* ctx) {
     (void)rdram;
-    _return<s32>(ctx, bm64::speech::is_active() ? 1 : 0);
+    _return<s32>(ctx, bm64::screen_reader::is_active() ? 1 : 0);
 }

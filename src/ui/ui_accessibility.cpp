@@ -5,7 +5,7 @@
 #include "RmlUi/Core.h"
 #include "RmlUi/Core/ElementText.h"
 
-#include "bm64_speech.h"
+#include "bm64_screen_reader.h"
 
 namespace {
     // Identity of the last announced element. Only compared, never dereferenced,
@@ -117,7 +117,7 @@ void recompui::accessibility::announce_focus(Rml::Context* context, bool user_in
     if (!position.empty()) {
         name += ", " + position;
     }
-    bm64::speech::speak(std::move(name), user_input && announced_any);
+    bm64::screen_reader::speak(std::move(name), user_input && announced_any);
     announced_any = true;
 }
 
